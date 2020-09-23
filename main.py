@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def graph(x_min, x_max, funct, *args, N=1000, plot=True, x_name=r'$x$', y_name=r'$f(x)$', title = r'Plot of the function $f(x)$',filename='', polar=False, plt_style="seaborn-colorblind",**kwargs):
+def graph(x_min, x_max, funct, *args, N=1000, ax = None, x_name=r'$x$', y_name=r'$f(x)$', title = r'Plot of the function $f(x)$',filename='', polar=False, **kwargs):
     """
     Recive a function and graph it over a the given domain of x
 
@@ -16,7 +16,7 @@ def graph(x_min, x_max, funct, *args, N=1000, plot=True, x_name=r'$x$', y_name=r
     @param *args: extra parameters for funct
     
     @param N: number of points on x domain to be calculated
-    @param plot: This tells if you want to plot or just get the data.
+    @param ax: plot the function in this ax object.
     @param x_name: str name of x axis
     @param y_name: str name of y axis
     @param title: title to give to the plot.
@@ -26,6 +26,7 @@ def graph(x_min, x_max, funct, *args, N=1000, plot=True, x_name=r'$x$', y_name=r
     @param **kwargs: extra arguments for the matplotlib call.
     
     @return x_list, y_list: numpy arrays with the plotted data.
+    @return ax: matplotlib axes object with the function.
     """
     if not callable(funct):
         raise TypeError("funct must be a Python function")
@@ -33,24 +34,22 @@ def graph(x_min, x_max, funct, *args, N=1000, plot=True, x_name=r'$x$', y_name=r
     x_list = np.linspace(x_min, x_max, N, endpoint=False)
     y_list = funct(x_list, *args)
     
-    if plot:
-        plt.style.use(plt_style)
-        
-        if not polar:
-            plt.plot(x_list, funct(x_list, *args))
-            plt.xlabel(x_name)
-            plt.ylabel(y_name)
-            plt.title(title)
-        else:
-            plt.polar(x_list, funct(x_list, *args))
+    if not ax:
+        fig, ax = plt.subplots()
+
+    if not polar:
+        ax.plot(x_list, funct(x_list, *args))
+        ax.set_xlabel(x_name)
+        ax.set_ylabel(y_name)
+        ax.set_title(title)
+    else:
+        ax.polar(x_list, funct(x_list, *args))
 
 
-        if bool(filename):
-            plt.savefig(filename)
-
-        plt.show()
+    if bool(filename):
+        plt.savefig(filename)
     
-    return x_list, y_list
+    return x_list, y_list, ax
 
 class LagrangeInterpolation:
     """
@@ -337,7 +336,7 @@ def diff_2(x, func, dx=0.01, *args):
     
     return dif
 
-# Esta se puede generalizar a cualquier función.
+
 def derivate(func, *args ,diff= "central", x_min= 0, x_max = 100, dx=0.01):
     """
     ------------------------------
