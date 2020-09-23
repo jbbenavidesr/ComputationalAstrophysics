@@ -360,3 +360,60 @@ def derivate(func, *args ,diff= "central", x_min= 0, x_max = 100, dx=0.01):
     diff = globals()[f"diff_{diff}"]
     
     return graph(x_min, x_max, diff, func, dx, *args, plot=False)
+
+def int_rect(x, f):
+    N = len(x)
+    # Numerical integration loop
+    Int = 0.
+    for i in range(N-1):
+        h = x[i+1] - x[i]
+        Int += h*f[i]
+        
+    return Int
+
+def int_trap(x, f):
+    N = len(x)
+    # Numerical integration loop
+    Int = 0.
+    for i in range(N-1):
+        h = x[i+1] - x[i]
+        f_mean = (f[i] + f[i+1])*0.5
+        Int += h*f_mean
+        
+    return Int
+
+def int_simpson(x, f):
+    N = len(x)
+    n = N-1
+    # Numerical integration loop
+    Int = 0.
+    for i in range(int((n-2)/2 +1)):
+        h = x[2*i+1] - x[2*i]
+        Int += h*(f[2*i] + 4*f[2*i+1] + f[2*i+2])/3
+    
+    return Int
+
+def integrate(func, int_type="trap", x_min= 0, x_max = 100, N = 1000, *args, **kwargs):
+    """
+    ------------------------------
+    Function Integral
+    ------------------------------
+    Calculates the integral of a function in
+    an interval from x_min to x_max. 
+    
+    @param func: function to derivate
+    @param *args, **kwargs: arguments of funct. The first argument must be the one in which you want to take de derivative.
+    @param diff: differentiation algorithm to be used. ("rect", "trap", "simpson")
+    @param x_min, x_max: x range to integrate
+    
+    @return Int: calculated value of the integral
+    ------------------------------
+    """
+    if not callable(func):
+        raise TypeError("funct must be a Python function")
+    
+    x, y = sample_f(x_min, x_max, N, func, *args, **kwargs)
+    
+    Int = globals()[f"int_{int_type}"](x, y)
+    
+    return Int
